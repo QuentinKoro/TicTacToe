@@ -12,7 +12,7 @@
 public class game{
 
 	public static void main(String args[]){
-		game();
+		ComputerVsComputer();
 	}
 //Class grid which contains every list for every row
 	static class GridInfo{
@@ -94,11 +94,9 @@ public class game{
 	static boolean isArrayEmpty(GridInfo gameGrid, int row, int index){
 		boolean empty;
 		if (gameGrid.gridArray[row][index] == 0){
-			System.out.println("Is empty !");
 			empty = true;
 		}
 		else{
-			System.out.println("Not empty!");
 			empty = false;
 
 		}
@@ -146,8 +144,14 @@ public class game{
 			}
 		return victory;
 	}
-
-	static void game(){
+	static GridInfo computerRandomPlacement(GridInfo gameGrid)
+	{
+		return gameGrid;	
+	}
+	/**
+	 * Iniaites the Player vs Player mode
+	 */
+	static void PvP(){
 		GridInfo gameGrid = new GridInfo();
 		int counter = 0;
 		int row;
@@ -209,6 +213,73 @@ public class game{
 		else{
 			System.out.println("Draw !");
 		} 
+	}
+		
+	/** Generation d'un nombre au "hasard"
+	 * @param un entier qui sert de borne inferieur
+	 * @param un entier qui sert de borne superieur
+	 * @return un entier compris entre la borne inf et la borne sup comprise
+	 */
+	static int randomInt(int borneInf, int borneSup){
+		//On genere un double compris entre 0 et 1
+		double randomDouble = Math.random();
+		// Calcul du nombre au hasard compris entre borneInf et borneMax
+		int randomInt = (int)(randomDouble * (borneSup - borneInf + 1) + borneInf);
+		return randomInt;
+	}
+		//Inputs a new value on the grid, placed by the computer at a random place
+	static GridInfo insertValueComputer(GridInfo gameGrid, int valuePlaced) {
+		int row;
+		int index;
+		//We take an random value an assign it to row and col, and this until it find a place
+		//where nothing has already been placed.
+		do{
+			row = randomInt(0, 2);
+			index = randomInt(0, 2);
+		}while(isArrayEmpty(gameGrid, row, index) == false);
+		
+		insertValueInGrid(gameGrid, row, index, valuePlaced);
+
+		return gameGrid;
+		}
+	//Launches the computer vs computer game mode
+	static void ComputerVsComputer(){
+		GridInfo gameGrid = new GridInfo();
+		int counter = 0;
+		boolean victory = false;
+		do{
+			//we place a value on the grid that has the value of 1 if conditions to enter the
+			//loop matched
+			if (victory == false){
+				insertValueComputer(gameGrid, 1);
+				victory = victoryCheck(gameGrid, 1);
+				System.out.println("===============");
+				printGrid(gameGrid);
+			}
+			//we place a value on the grid that has the value of 2 if conditions to enter the
+			//loop matched
+			if (victory == false){
+				insertValueComputer(gameGrid, 2);
+				victory = victoryCheck(gameGrid, 2);
+				System.out.println("===============");
+				printGrid(gameGrid);
+			}
+		}while (victory == false);
+		System.out.println("===============");
+	
+		//We check the victory status to see if computer 1 or 2 has won
+		//(or if it's a draw)
+
+		if(victoryCheck(gameGrid, 1) == true){
+			System.out.println("Computer 1 won !");
+		}
+		else if(victoryCheck(gameGrid, 2) == true){
+			System.out.println("Computer 2 won !");
+		}
+		else{
+
+			System.out.println("It's a draw !");
+		}
 	}
 }
 
