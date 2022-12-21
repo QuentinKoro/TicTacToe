@@ -12,7 +12,9 @@
 public class game{
 
 	public static void main(String args[]){
-		ComputerVsComputer();
+		//ComputerVsComputer();
+		//PlayerVsComputer();
+		gameChoice();
 	}
 //Class grid which contains every list for every row
 	static class GridInfo{
@@ -216,7 +218,7 @@ public class game{
 	}
 		
 	/** Generation d'un nombre au "hasard"
-	 * @param un entier qui sert de borne inferieur
+	 * @param  
 	 * @param un entier qui sert de borne superieur
 	 * @return un entier compris entre la borne inf et la borne sup comprise
 	 */
@@ -227,7 +229,7 @@ public class game{
 		int randomInt = (int)(randomDouble * (borneSup - borneInf + 1) + borneInf);
 		return randomInt;
 	}
-		//Inputs a new value on the grid, placed by the computer at a random place
+	//Inputs a new value on the grid, placed by the computer at a random place
 	static GridInfo insertValueComputer(GridInfo gameGrid, int valuePlaced) {
 		int row;
 		int index;
@@ -281,5 +283,87 @@ public class game{
 			System.out.println("It's a draw !");
 		}
 	}
-}
+	//Initiates the Player vs Computer game mode
+	static void PlayerVsComputer(){
+		GridInfo gameGrid = new GridInfo();
+		int counter = 0;
+		int row;
+		int index;
+		boolean victory = false;
+		printGrid(gameGrid);
+		while(victory == false){
+			counter ++;
+			do{
+				System.out.print("Player 1 : \nInput an int for the row\n");
+				row = GetUserInput();
+				System.out.print("Player 1 : \nInput an int for the column\n");
+				index = GetUserInput();
+				row --;
+				index --;
+			} while(isArrayEmpty(gameGrid, row, index) == false);
 
+			insertValueInGrid(gameGrid, row, index, 1);
+			printGrid(gameGrid);
+
+			if (victoryCheck(gameGrid, 1) == true){  
+
+				victory = true;
+			}
+			else{
+				counter ++;
+				if (counter >= 9){
+					victory = true;
+				}
+				else{
+				insertValueComputer(gameGrid, 2);
+				victory = victoryCheck(gameGrid, 2);
+				System.out.println("===============");
+				printGrid(gameGrid);
+
+				}
+			}
+			if (victoryCheck(gameGrid, 2) == true){  
+
+				victory = true;
+			}
+			else if (counter >= 9){
+				victory = true;
+			}
+			
+		} 
+		if(victoryCheck(gameGrid, 1) == true){
+			System.out.println("Player won !");
+		} 
+		else if(victoryCheck(gameGrid, 2) == true){
+			System.out.println("Computer won !");
+		} 
+		else{
+			System.out.println("Draw !");
+		} 
+	}
+	//This is the main menu where the player selects the game they want to play
+	static void gameChoice(){
+
+		System.out.print("*===========Tic Tac Toe===========*\n*                                 *\n*Which gamemode you want to play ?*");
+		System.out.print("\n* 1. Player vs Player             *");
+		System.out.print("\n* 2. Player vs Computer           *");
+		System.out.print("\n* 3. Computer vs Computer         *");
+		System.out.print("\n*                                 *");
+		System.out.print("\n*        Faites votre choix       *");
+		System.out.print("\n*=================================*");
+		int ans = GetUserInput();
+		switch(ans){
+			case 1:
+				PvP();
+				break;
+			case 2:
+				PlayerVsComputer();
+				break;
+			case 3: 
+				ComputerVsComputer(); 
+				break;
+
+		}
+
+	}
+}
