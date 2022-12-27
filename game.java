@@ -455,6 +455,18 @@ public class game{
 		System.out.println("No winning move detected\n");
 		//If we're here in the code it means none of the moves we can make wins 
 		//the game so we place at random place
+		gameGrid = bestRandomMove(gameGrid, value);
+		System.out.println("end ?\n");
+		return gameGrid;
+	}
+	/** Places at random place, the corner or the middle, or anywhere else if
+	* these are already taken
+	* @param a grid
+	* @param the value that the computer places
+	* @return a grid with a new value
+	*/
+	static GridInfo bestRandomMove(GridInfo gameGrid, int value){
+
 		boolean placed = false;
 		int counter = 0;
 		while(placed == false){
@@ -501,9 +513,8 @@ public class game{
 				}
 			
 		}
-		System.out.println("end ?\n");
-		return gameGrid;
+			return gameGrid;
+		}
 
-
-	} 
+	 
 }
