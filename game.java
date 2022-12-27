@@ -263,7 +263,7 @@ public class game{
 			//we place a value on the grid that has the value of 1 if conditions to enter the
 			//loop matched
 			if (victory == false){
-				bestMove(gameGrid, 1);
+				bestMove(gameGrid, 1, 2);
 				victory = victoryCheck(gameGrid, 1);
 				System.out.println("===============");
 				printGrid(gameGrid);
@@ -271,7 +271,7 @@ public class game{
 			//we place a value on the grid that has the value of 2 if conditions to enter the
 			//loop matched
 			if (victory == false){
-				bestMove(gameGrid, 2);
+				bestMove(gameGrid, 2, 1);
 				victory = victoryCheck(gameGrid, 2);
 				System.out.println("===============");
 				printGrid(gameGrid);
@@ -325,7 +325,7 @@ public class game{
 					victory = true;
 				}
 				else{
-				bestMove(gameGrid, 2);
+				bestMove(gameGrid, 2, 1);
 				victory = victoryCheck(gameGrid, 2);
 				System.out.println("===============");
 				printGrid(gameGrid);
@@ -378,14 +378,37 @@ public class game{
 	}
 	/**
 	 * Calculates the best move to do
+	 * @param the grid of the game
+	 * @param the value the computer that will make the move w/ this function places
+	 * @param the value that the opponenent places
+	 * @return the grid of the game with the best move placed 
 	 */
-	static GridInfo bestMove(GridInfo gameGrid, int value){
+	static GridInfo bestMove(GridInfo gameGrid, int value, int valueOppo){
 		int row;
 		int index;
-		int bestMove = 0;
-		GridInfo copyGrid = new GridInfo();
-		copyGrid = gameGrid;
-		
+		boolean same = true;
+		int[][] copyGrid = new int [3][3];
+
+    	for (int i = 0; i < gameGrid.gridArray.length; i++) {
+       		for (int j = 0; j < gameGrid.gridArray.length; j++) {
+       	    	// If any element is not the same, return false
+       	     	copyGrid[i][j] = gameGrid.gridArray[i][j]; 			
+			}
+		}
+
+		//We check if the opponent can win, and we block this possibility if we can
+		gameGrid = blockMove(gameGrid, valueOppo, value);
+		//We look if a value has been placed if it is the case we return the grid so 
+		//the program doesn't place a second value in a single round
+  	 	for (int i = 0; i < gameGrid.gridArray.length; i++) {
+   	    	for (int j = 0; j < gameGrid.gridArray.length; j++) {
+            	// If any element is not the same, return false
+            	if (gameGrid.gridArray[i][j] != copyGrid[i][j]) {
+					return gameGrid;
+            	}
+        	}
+    	}
+
 		//We check if placing a value at the last row wins, if it does we place it 
 		for(int i = 0; i < 3; i++){
 			if ((gameGrid.gridArray[i][0] == value) && (gameGrid.gridArray[i][1] == value) && (gameGrid.gridArray[i][2] == 0)){
@@ -452,11 +475,9 @@ public class game{
 		right_index = 0;
 		}
 
-		System.out.println("No winning move detected\n");
 		//If we're here in the code it means none of the moves we can make wins 
 		//the game so we place at random place
 		gameGrid = bestRandomMove(gameGrid, value);
-		System.out.println("end ?\n");
 		return gameGrid;
 	}
 	/** Places at random place, the corner or the middle, or anywhere else if
@@ -515,6 +536,70 @@ public class game{
 		}
 			return gameGrid;
 		}
+	//If the other player can make a move that will win the game, this function 
+	//will place a value to block this specific move
+	/**
+	 * @param the grid of the game
+	 * @param the value that the opponenent places
+	 * @param the value that we place
+	 * @return the grid with the winning move blocked, or nothing if it doesn't exist
+	 */
+	static GridInfo blockMove(GridInfo gameGrid, int value, int ourValue){
+		//First of all we determine the value that we place on the grid
 
+		//We check if placing a value at the last row wins, if it does we place it 
+		for(int i = 0; i < 3; i++){
+			if ((gameGrid.gridArray[i][0] == value) && (gameGrid.gridArray[i][1] == value) && (gameGrid.gridArray[i][2] == 0)){
+				gameGrid = insertValueInGrid(gameGrid ,i, 2, ourValue);
+				return gameGrid;
+			}
+			//We check if placing a value at the middle row wins
+			if ((gameGrid.gridArray[i][0] == value) && (gameGrid.gridArray[i][1] == 0) && (gameGrid.gridArray[i][2] == value)){
+				gameGrid = insertValueInGrid(gameGrid ,i, 1, ourValue);
+				return gameGrid;
+			}
+
+			//We check if placing a value at the first row wins
+			if ((gameGrid.gridArray[i][0] == 0) && (gameGrid.gridArray[i][1] == value) && (gameGrid.gridArray[i][2] == value)){
+				gameGrid = insertValueInGrid(gameGrid ,i, 0, ourValue);
+				return gameGrid;
+			}
+		}
+
+		//We now do the same things for the columns
+		for(int i = 0; i < 3; i++){
+			if ((gameGrid.gridArray[0][i] == value) && (gameGrid.gridArray[1][i] == value) && (gameGrid.gridArray[2][i] == 0)){
+				gameGrid = insertValueInGrid(gameGrid ,2, i, ourValue);
+				return gameGrid;
+			}
+			//We check if placing a value at the middle column wins
+			if ((gameGrid.gridArray[0][i] == value) && (gameGrid.gridArray[1][i] == 0) && (gameGrid.gridArray[2][i] == value)){
+				gameGrid = insertValueInGrid(gameGrid , 1, i, ourValue);
+				return gameGrid;
+			}
+
+			//We check if placing a value at the first row wins
+			if ((gameGrid.gridArray[0][i] == 0) && (gameGrid.gridArray[1][i] == value) && (gameGrid.gridArray[2][i] == value)){
+				gameGrid = insertValueInGrid(gameGrid ,0, i, ourValue);
+				return gameGrid;
+			}
+		}
+
+		//We check if the diagonal makes us win
+		//First we look if the diagonal if only the top left corner is empty
+		int left_row = 0;
+		int left_index = 0;
+		int right_row = 2;
+		int right_index = 2;
+		for(int i = 0; i < 2; i++){
+			if ((gameGrid.gridArray[left_row][left_index] == 0) && (gameGrid.gridArray[1][1] == value) && (gameGrid.gridArray[right_row][right_index] == value)){
+				gameGrid = insertValueInGrid(gameGrid ,left_row, left_index, ourValue);
+				return gameGrid;
+			}
+
+		}
+		System.out.println("No move to block opponent were found\n");
+		return gameGrid;
+	}
 	 
 }
