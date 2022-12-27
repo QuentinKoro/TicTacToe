@@ -12,8 +12,6 @@
 public class game{
 
 	public static void main(String args[]){
-		//ComputerVsComputer();
-		//PlayerVsComputer();
 		gameChoice();
 	}
 //Class grid which contains every list for every row
@@ -140,18 +138,29 @@ public class game{
 			}
 
 		}
-		//We check in the diagonal
-			if ((gameGrid.gridArray[0][0] == player_index) && (gameGrid.gridArray[1][1] == player_index) && (gameGrid.gridArray[2][2] == player_index)){
+		//We check in the diagonals
+
+		int left_row = 0;
+		int left_index = 0;
+		int right_row = 2;
+		int right_index = 2;
+		for(int i = 0; i < 2; i++){
+			if ((gameGrid.gridArray[left_row][left_index] == player_index) && (gameGrid.gridArray[1][1] == player_index) && (gameGrid.gridArray[right_row][right_index] == player_index)){
 				victory = true;
 			}
+		left_row = 0;
+		left_index = 2;
+		right_row = 2;
+		right_index = 0;
+		}
+
 		return victory;
 	}
-	static GridInfo computerRandomPlacement(GridInfo gameGrid)
-	{
+	static GridInfo computerRandomPlacement(GridInfo gameGrid){
 		return gameGrid;	
 	}
 	/**
-	 * Iniaites the Player vs Player mode
+	 * Initiates the Player vs Player mode
 	 */
 	static void PvP(){
 		GridInfo gameGrid = new GridInfo();
@@ -218,6 +227,7 @@ public class game{
 	}
 		
 	/** Generation d'un nombre au "hasard"
+	 *
 	 * @param  
 	 * @param un entier qui sert de borne superieur
 	 * @return un entier compris entre la borne inf et la borne sup comprise
@@ -253,7 +263,7 @@ public class game{
 			//we place a value on the grid that has the value of 1 if conditions to enter the
 			//loop matched
 			if (victory == false){
-				insertValueComputer(gameGrid, 1);
+				bestMove(gameGrid, 1);
 				victory = victoryCheck(gameGrid, 1);
 				System.out.println("===============");
 				printGrid(gameGrid);
@@ -261,7 +271,7 @@ public class game{
 			//we place a value on the grid that has the value of 2 if conditions to enter the
 			//loop matched
 			if (victory == false){
-				insertValueComputer(gameGrid, 2);
+				bestMove(gameGrid, 2);
 				victory = victoryCheck(gameGrid, 2);
 				System.out.println("===============");
 				printGrid(gameGrid);
@@ -315,7 +325,7 @@ public class game{
 					victory = true;
 				}
 				else{
-				insertValueComputer(gameGrid, 2);
+				bestMove(gameGrid, 2);
 				victory = victoryCheck(gameGrid, 2);
 				System.out.println("===============");
 				printGrid(gameGrid);
@@ -349,7 +359,7 @@ public class game{
 		System.out.print("\n* 2. Player vs Computer           *");
 		System.out.print("\n* 3. Computer vs Computer         *");
 		System.out.print("\n*                                 *");
-		System.out.print("\n*        Faites votre choix       *");
+		System.out.print("\n*         Make your choice        *");
 		System.out.print("\n*=================================*");
 		int ans = GetUserInput();
 		switch(ans){
@@ -366,4 +376,134 @@ public class game{
 		}
 
 	}
+	/**
+	 * Calculates the best move to do
+	 */
+	static GridInfo bestMove(GridInfo gameGrid, int value){
+		int row;
+		int index;
+		int bestMove = 0;
+		GridInfo copyGrid = new GridInfo();
+		copyGrid = gameGrid;
+		
+		//We check if placing a value at the last row wins, if it does we place it 
+		for(int i = 0; i < 3; i++){
+			if ((gameGrid.gridArray[i][0] == value) && (gameGrid.gridArray[i][1] == value) && (gameGrid.gridArray[i][2] == 0)){
+				gameGrid = insertValueInGrid(gameGrid ,i, 2, value);
+				return gameGrid;
+			}
+			//We check if placing a value at the middle row wins
+			if ((gameGrid.gridArray[i][0] == value) && (gameGrid.gridArray[i][1] == 0) && (gameGrid.gridArray[i][2] == value)){
+				gameGrid = insertValueInGrid(gameGrid ,i, 1, value);
+				return gameGrid;
+			}
+
+			//We check if placing a value at the first row wins
+			if ((gameGrid.gridArray[i][0] == 0) && (gameGrid.gridArray[i][1] == value) && (gameGrid.gridArray[i][2] == value)){
+				gameGrid = insertValueInGrid(gameGrid ,i, 0, value);
+				return gameGrid;
+			}
+		}
+
+		//We now do the same things for the columns
+		for(int i = 0; i < 3; i++){
+			if ((gameGrid.gridArray[0][i] == value) && (gameGrid.gridArray[1][i] == value) && (gameGrid.gridArray[2][i] == 0)){
+				gameGrid = insertValueInGrid(gameGrid ,2, i, value);
+				return gameGrid;
+			}
+			//We check if placing a value at the middle column wins
+			if ((gameGrid.gridArray[0][i] == value) && (gameGrid.gridArray[1][i] == 0) && (gameGrid.gridArray[2][i] == value)){
+				gameGrid = insertValueInGrid(gameGrid , 1, i, value);
+				return gameGrid;
+			}
+
+			//We check if placing a value at the first row wins
+			if ((gameGrid.gridArray[0][i] == 0) && (gameGrid.gridArray[1][i] == value) && (gameGrid.gridArray[2][i] == value)){
+				gameGrid = insertValueInGrid(gameGrid ,0, i, value);
+				return gameGrid;
+			}
+		}
+
+		//We check if the diagonal makes us win
+		//First we look if the diagonal if only the top left corner is empty
+		int left_row = 0;
+		int left_index = 0;
+		int right_row = 2;
+		int right_index = 2;
+		for(int i = 0; i < 2; i++){
+			if ((gameGrid.gridArray[left_row][left_index] == 0) && (gameGrid.gridArray[1][1] == value) && (gameGrid.gridArray[right_row][right_index] == value)){
+				gameGrid = insertValueInGrid(gameGrid ,left_row, left_index, value);
+				return gameGrid;
+			}
+			//We look if the center if empty
+			else if ((gameGrid.gridArray[left_row][left_index] == value) && (gameGrid.gridArray[1][1] == 0) && (gameGrid.gridArray[right_row][right_index] == value)){
+				gameGrid = insertValueInGrid(gameGrid ,1, 1, value);
+				return gameGrid;
+			}
+
+			else if ((gameGrid.gridArray[left_row][left_index] == value) && (gameGrid.gridArray[1][1] == value) && (gameGrid.gridArray[right_row][right_index] == 0)){
+				gameGrid = insertValueInGrid(gameGrid ,right_row, right_index, value);
+				return gameGrid;	
+			}
+
+		left_row = 0;
+		left_index = 2;
+		right_row = 2;
+		right_index = 0;
+		}
+
+		System.out.println("No winning move detected\n");
+		//If we're here in the code it means none of the moves we can make wins 
+		//the game so we place at random place
+		boolean placed = false;
+		int counter = 0;
+		while(placed == false){
+			//We generate a number from 0 to 4 
+			int randomPlacement = randomInt(0, 4);	
+			switch(randomPlacement){
+				case 0:
+					if(isArrayEmpty(gameGrid, 0, 0) == true){
+						insertValueInGrid(gameGrid, 0, 0, value);
+						placed = true;
+						break;
+					}
+				case 1:
+					if(isArrayEmpty(gameGrid, 0, 2) == true){
+						insertValueInGrid(gameGrid, 0, 2, value);
+						placed = true;
+						break;
+					}
+				case 2:
+					if(isArrayEmpty(gameGrid, 2, 2) == true){
+						insertValueInGrid(gameGrid, 2, 2, value);
+						placed = true;
+						break;
+					}
+				case 3:
+					if(isArrayEmpty(gameGrid, 2, 0) == true){
+						insertValueInGrid(gameGrid, 2, 0, value);
+						placed = true;
+						break;
+					}
+				case 4:
+					if(isArrayEmpty(gameGrid, 1, 1) == true){
+						insertValueInGrid(gameGrid, 1, 1, value);
+						placed = true;
+						break;
+					}
+			}
+				counter ++;
+				//If this little while repets more than 20 times, most likely all these spots
+				//are taken so we place randomly in the grid to counter this issue
+				if (counter > 20){
+					insertValueComputer(gameGrid, value);
+					placed = true;
+				}
+			
+		}
+		System.out.println("end ?\n");
+		return gameGrid;
+
+
+	} 
 }
