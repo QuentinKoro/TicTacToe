@@ -11,9 +11,11 @@
  import java.util.*;
 public class game{
 
+    /**
 	public static void main(String args[]){
 		gameChoice();
 	}
+    */
 //Class grid which contains every list for every row
 	static class GridInfo{
 		int[][] gridArray = new int[3][3];
